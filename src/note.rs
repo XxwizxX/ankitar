@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+// TODO should be enums
 #[derive(Debug, Clone)]
 pub struct Note(pub String);
 

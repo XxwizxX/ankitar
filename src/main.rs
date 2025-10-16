@@ -10,6 +10,7 @@ use petgraph::graph::NodeIndex;
 
 #[derive(Parser)]
 struct Args {
+    // TODO should be enums
     /// root note
     #[arg(short, long)]
     root: String,
@@ -30,6 +31,7 @@ fn main() {
     println!("{:?}", result)
 }
 
+// TODO change to linked list
 struct Notes(Graph<Note, ()>);
 
 fn get_node_index_by_value<N: PartialEq>(

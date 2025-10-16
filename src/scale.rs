@@ -1,5 +1,6 @@
 use clap::ValueEnum;
 
+#[derive(Debug)]
 pub enum Interval {
     HalfStep,
     WholeStep,
@@ -14,6 +15,7 @@ pub enum ScaleType {
     MinorPentatonic,
 }
 
+#[derive(Debug)]
 pub struct Scale(pub Vec<Interval>);
 
 impl Scale {

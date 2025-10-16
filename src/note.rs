@@ -1,17 +1,20 @@
+use clap::ValueEnum;
 use std::fmt::Debug;
 
-// TODO should be enums
-#[derive(Debug, Clone)]
-pub struct Note(pub String);
-
-impl Note {
-    pub fn new(name: String) -> Self {
-        Note(name)
-    }
-}
-
-impl PartialEq for Note {
-    fn eq(&self, other: &Note) -> bool {
-        self.0 == other.0
-    }
+#[derive(Debug, Clone, PartialEq, ValueEnum)]
+#[value(rename_all = "verbatim")]
+// TODO add multiple names for the same note (e.g. C# and Db)
+pub enum Note {
+    C,
+    Db,
+    D,
+    Eb,
+    E,
+    F,
+    Gb,
+    G,
+    Ab,
+    A,
+    Bb,
+    B,
 }

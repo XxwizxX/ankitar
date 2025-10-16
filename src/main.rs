@@ -10,10 +10,9 @@ use petgraph::graph::NodeIndex;
 
 #[derive(Parser)]
 struct Args {
-    // TODO should be enums
     /// root note
-    #[arg(short, long)]
-    root: String,
+    #[arg(short, long, value_enum)]
+    root: Note,
 
     /// scale to use
     #[arg(short, long, value_enum)]
@@ -24,7 +23,7 @@ fn main() {
     let args = Args::parse();
     let notes = Notes::init();
 
-    let root = Note(args.root.to_string());
+    let root = args.root;
     let scale = Scale::from_type(args.scale);
 
     let result = notes.get_notes(&root, &scale);
@@ -49,57 +48,32 @@ impl Notes {
     fn init() -> Self {
         let mut all_notes = Graph::<Note, ()>::new();
 
-        let c = all_notes.add_node(Note("C".to_string()));
-        let c_sharp = all_notes.add_node(Note("C#".to_string()));
-        let d_flat = all_notes.add_node(Note("Db".to_string()));
-        let d = all_notes.add_node(Note("D".to_string()));
-        let d_sharp = all_notes.add_node(Note("D#".to_string()));
-        let e_flat = all_notes.add_node(Note("Eb".to_string()));
-        let e = all_notes.add_node(Note("E".to_string()));
-        let f = all_notes.add_node(Note("F".to_string()));
-        let f_sharp = all_notes.add_node(Note("F#".to_string()));
-        let g_flat = all_notes.add_node(Note("Gb".to_string()));
-        let g = all_notes.add_node(Note("G".to_string()));
-        let g_sharp = all_notes.add_node(Note("G#".to_string()));
-        let a_flat = all_notes.add_node(Note("Ab".to_string()));
-        let a = all_notes.add_node(Note("A".to_string()));
-        let a_sharp = all_notes.add_node(Note("A#".to_string()));
-        let b_flat = all_notes.add_node(Note("Bb".to_string()));
-        let b = all_notes.add_node(Note("B".to_string()));
+        let c = all_notes.add_node(Note::C);
+        let c_sharp = all_notes.add_node(Note::Db);
+        let d = all_notes.add_node(Note::D);
+        let d_sharp = all_notes.add_node(Note::Eb);
+        let e = all_notes.add_node(Note::E);
+        let f = all_notes.add_node(Note::F);
+        let f_sharp = all_notes.add_node(Note::Gb);
+        let g = all_notes.add_node(Note::G);
+        let g_sharp = all_notes.add_node(Note::Ab);
+        let a = all_notes.add_node(Note::A);
+        let a_sharp = all_notes.add_node(Note::Bb);
+        let b = all_notes.add_node(Note::B);
 
         all_notes.add_edge(c, c_sharp, ());
-        all_notes.add_edge(c, d_flat, ());
-
         all_notes.add_edge(c_sharp, d, ());
-        all_notes.add_edge(d_flat, d, ());
-
         all_notes.add_edge(d, d_sharp, ());
-        all_notes.add_edge(d, e_flat, ());
-
         all_notes.add_edge(d_sharp, e, ());
-        all_notes.add_edge(e_flat, e, ());
-
         all_notes.add_edge(e, f, ());
-
         all_notes.add_edge(f, f_sharp, ());
-        all_notes.add_edge(f, g_flat, ());
-
         all_notes.add_edge(f_sharp, g, ());
-        all_notes.add_edge(g_flat, g, ());
-
         all_notes.add_edge(g, g_sharp, ());
-        all_notes.add_edge(g, a_flat, ());
-
         all_notes.add_edge(g_sharp, a, ());
-        all_notes.add_edge(a_flat, a, ());
-
         all_notes.add_edge(a, a_sharp, ());
-        all_notes.add_edge(a, b_flat, ());
-
         all_notes.add_edge(a_sharp, b, ());
-        all_notes.add_edge(b_flat, b, ());
-
         all_notes.add_edge(b, c, ());
+
         Notes(all_notes)
     }
 

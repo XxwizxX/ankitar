@@ -14,6 +14,19 @@ impl GString {
             fret_count,
         }
     }
+
+    pub fn visualize_selected_notes(&self, notes: &[Note]) {
+        print!("{}|", self.open_string);
+        for fret in 1..=self.fret_count {
+            let note = self.open_string.nth_half_step(fret as i32);
+            if notes.contains(&note) {
+                print!("|--{}--", note);
+            } else {
+                print!("|------");
+            }
+        }
+        println!("|");
+    }
 }
 
 impl Display for GString {

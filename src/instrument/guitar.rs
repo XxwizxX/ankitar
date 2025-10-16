@@ -18,6 +18,17 @@ impl Guitar {
             .collect();
         Guitar { strings , fret_count}
     }
+
+    pub fn visualize(&self, notes: &[Note]) {
+        print!( "--||");
+        for fret in 1..=self.fret_count {
+            print!("{:->7}", fret);
+        }
+        println!();
+        for string in &self.strings {
+            string.visualize_selected_notes(notes);
+        }
+    }
 }
 
 impl Display for Guitar {

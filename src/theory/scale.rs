@@ -29,7 +29,7 @@ impl Scale {
         }
     }
 
-    pub fn root(self: &Self, note: &Note) -> Vec<Note> {
+    pub fn root(&self, note: &Note) -> Vec<Note> {
         let mut result: Vec<Note> = Vec::new();
         result.push(note.clone());
         self.0.iter().for_each(|interval| {

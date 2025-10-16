@@ -3,6 +3,7 @@ mod instrument;
 
 use clap::Parser;
 pub use theory::*;
+use crate::instrument::Guitar;
 
 #[derive(Parser)]
 struct Args {
@@ -17,15 +18,15 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
+    
+    let guitar = Guitar::standard();
 
     let root = args.root;
     let scale = Scale::from_type(args.scale);
 
-    let result = scale.root(&root);
-    let result = format_notes(&result);
-    println!("{:?}", result)
+    let scale = scale.root(&root);
+    guitar.visualize(&scale);
 }
-
 
 pub fn format_notes(notes: &Vec<Note>) -> Vec<String> {
     let mut result = Vec::new();

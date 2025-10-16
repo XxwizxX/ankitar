@@ -1,4 +1,5 @@
 use clap::ValueEnum;
+use crate::Note;
 
 #[derive(Debug)]
 pub enum Interval {
@@ -26,6 +27,21 @@ impl Scale {
             ScaleType::MajorPentatonic => Scale::major_pentatonic(),
             ScaleType::MinorPentatonic => Scale::minor_pentatonic(),
         }
+    }
+
+    pub fn root(self: &Self, note: &Note) -> Vec<Note> {
+        let mut result: Vec<Note> = Vec::new();
+        result.push(note.clone());
+        self.0.iter().for_each(|interval| {
+            let last_note = result.last().unwrap();
+            let next_note = match interval {
+                Interval::HalfStep => last_note.nth_half_step(1),
+                Interval::WholeStep => last_note.nth_half_step(2),
+                Interval::MinorThird => last_note.nth_half_step(3),
+            };
+            result.push(next_note);
+        });
+        result
     }
 
     fn major() -> Self {

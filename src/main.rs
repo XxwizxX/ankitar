@@ -1,12 +1,8 @@
-mod note;
-mod scale;
-mod fmt;
+mod theory;
+mod instrument;
 
 use clap::Parser;
-pub use note::Note;
-pub use scale::*;
-pub use fmt::format_notes;
-use std::collections::LinkedList;
+pub use theory::*;
 
 #[derive(Parser)]
 struct Args {
@@ -21,69 +17,57 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
-    let notes = Notes::init();
 
     let root = args.root;
     let scale = Scale::from_type(args.scale);
 
-    let result = notes.get_notes(&root, &scale);
+    let result = scale.root(&root);
     let result = format_notes(&result);
     println!("{:?}", result)
 }
 
-struct Notes(LinkedList<Note>);
 
-fn find_index<T: PartialEq>(list: &LinkedList<T>, value: &T) -> Option<usize> {
-    for (index, element) in list.iter().enumerate() {
-        if element == value {
-            return Some(index);
+pub fn format_notes(notes: &Vec<Note>) -> Vec<String> {
+    let mut result = Vec::new();
+    for note in notes {
+        match note {
+            Note::Db => {
+                if notes.contains(&Note::D) {
+                    result.push("C#".to_string())
+                } else {
+                    result.push("Db".to_string())
+                }
+            }
+            Note::Eb => {
+                if notes.contains(&Note::E) {
+                    result.push("D#".to_string())
+                } else {
+                    result.push("Eb".to_string())
+                }
+            }
+            Note::Gb => {
+                if notes.contains(&Note::G) {
+                    result.push("F#".to_string())
+                } else {
+                    result.push("Gb".to_string())
+                }
+            }
+            Note::Ab => {
+                if notes.contains(&Note::A) {
+                    result.push("G#".to_string())
+                } else {
+                    result.push("Ab".to_string())
+                }
+            }
+            Note::Bb => {
+                if notes.contains(&Note::B) {
+                    result.push("A#".to_string())
+                } else {
+                    result.push("Bb".to_string())
+                }
+            }
+            _ => result.push(note.to_string()),
         }
     }
-    None
-}
-
-impl Notes {
-    fn init() -> Self {
-        let mut list: LinkedList<Note> = LinkedList::new();
-        list.push_back(Note::C);
-        list.push_back(Note::Db);
-        list.push_back(Note::D);
-        list.push_back(Note::Eb);
-        list.push_back(Note::E);
-        list.push_back(Note::F);
-        list.push_back(Note::Gb);
-        list.push_back(Note::G);
-        list.push_back(Note::Ab);
-        list.push_back(Note::A);
-        list.push_back(Note::Bb);
-        list.push_back(Note::B);
-
-        Notes(list)
-    }
-
-    fn half_step(&self, note: &Note) -> Note {
-        let idx = find_index(&self.0, note).unwrap();
-        self.0.iter().nth((idx + 1) % self.0.len()).unwrap().clone()
-    }
-
-    fn whole_step(&self, note: &Note) -> Note {
-        self.half_step(&self.half_step(note)).clone()
-    }
-
-    fn minor_third(&self, note: &Note) -> Note {
-        self.whole_step(&self.half_step(note)).clone()
-    }
-
-    fn get_notes(&self, root: &Note, scale: &Scale) -> Vec<Note> {
-        let mut notes = vec![root.clone()];
-        for interval in &scale.0 {
-            let next_note = match interval {
-                Interval::HalfStep => self.half_step(notes.last().unwrap()),
-                Interval::WholeStep => self.whole_step(notes.last().unwrap()),
-                Interval::MinorThird => self.minor_third(notes.last().unwrap()),
-            };
-            notes.push(next_note);
-        }
-        notes
-    }
+    result
 }

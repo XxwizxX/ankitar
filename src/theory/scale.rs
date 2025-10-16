@@ -1,5 +1,5 @@
-use clap::ValueEnum;
 use crate::Note;
+use clap::ValueEnum;
 
 #[derive(Debug)]
 pub enum Interval {

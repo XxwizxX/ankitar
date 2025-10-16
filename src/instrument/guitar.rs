@@ -1,6 +1,6 @@
-use std::fmt::{Display, Formatter};
-use crate::instrument::string::GString;
 use crate::Note;
+use crate::instrument::string::GString;
+use std::fmt::{Display, Formatter};
 
 #[derive(Debug)]
 pub struct Guitar {
@@ -16,11 +16,14 @@ impl Guitar {
             .into_iter()
             .map(|note| GString::new(note, fret_count))
             .collect();
-        Guitar { strings , fret_count}
+        Guitar {
+            strings,
+            fret_count,
+        }
     }
 
     pub fn visualize(&self, notes: &[Note]) {
-        print!( "--||");
+        print!("--||");
         for fret in 1..=self.fret_count {
             print!("{:->7}", fret);
         }

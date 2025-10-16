@@ -1,9 +1,9 @@
-mod theory;
 mod instrument;
+mod theory;
 
+use crate::instrument::Guitar;
 use clap::Parser;
 pub use theory::*;
-use crate::instrument::Guitar;
 
 #[derive(Parser)]
 struct Args {
@@ -18,7 +18,7 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
-    
+
     let guitar = Guitar::standard();
 
     let root = args.root;

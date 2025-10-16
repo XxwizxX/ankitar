@@ -1,12 +1,12 @@
+#![feature(linked_list_cursors)]
+
 mod note;
 mod scale;
 
 use clap::Parser;
 pub use note::Note;
 pub use scale::*;
-
-use petgraph::graph::Graph;
-use petgraph::graph::NodeIndex;
+use std::collections::LinkedList;
 
 #[derive(Parser)]
 struct Args {
@@ -30,58 +30,42 @@ fn main() {
     println!("{:?}", result)
 }
 
-// TODO change to linked list
-struct Notes(Graph<Note, ()>);
-
-fn get_node_index_by_value<N: PartialEq>(
-    graph: &Graph<N, ()>,
-    target_value: &N,
-) -> Option<NodeIndex> {
-    graph.node_indices().find(|&node_idx| {
-        graph
-            .node_weight(node_idx)
-            .map_or(false, |weight| weight == target_value)
-    })
-}
+struct Notes(LinkedList<Note>);
 
 impl Notes {
     fn init() -> Self {
-        let mut all_notes = Graph::<Note, ()>::new();
+        let mut list: LinkedList<Note> = LinkedList::new();
+        list.push_back(Note::C);
+        list.push_back(Note::Db);
+        list.push_back(Note::D);
+        list.push_back(Note::Eb);
+        list.push_back(Note::E);
+        list.push_back(Note::F);
+        list.push_back(Note::Gb);
+        list.push_back(Note::G);
+        list.push_back(Note::Ab);
+        list.push_back(Note::A);
+        list.push_back(Note::Bb);
+        list.push_back(Note::B);
 
-        let c = all_notes.add_node(Note::C);
-        let c_sharp = all_notes.add_node(Note::Db);
-        let d = all_notes.add_node(Note::D);
-        let d_sharp = all_notes.add_node(Note::Eb);
-        let e = all_notes.add_node(Note::E);
-        let f = all_notes.add_node(Note::F);
-        let f_sharp = all_notes.add_node(Note::Gb);
-        let g = all_notes.add_node(Note::G);
-        let g_sharp = all_notes.add_node(Note::Ab);
-        let a = all_notes.add_node(Note::A);
-        let a_sharp = all_notes.add_node(Note::Bb);
-        let b = all_notes.add_node(Note::B);
-
-        all_notes.add_edge(c, c_sharp, ());
-        all_notes.add_edge(c_sharp, d, ());
-        all_notes.add_edge(d, d_sharp, ());
-        all_notes.add_edge(d_sharp, e, ());
-        all_notes.add_edge(e, f, ());
-        all_notes.add_edge(f, f_sharp, ());
-        all_notes.add_edge(f_sharp, g, ());
-        all_notes.add_edge(g, g_sharp, ());
-        all_notes.add_edge(g_sharp, a, ());
-        all_notes.add_edge(a, a_sharp, ());
-        all_notes.add_edge(a_sharp, b, ());
-        all_notes.add_edge(b, c, ());
-
-        Notes(all_notes)
+        Notes(list)
     }
 
     fn half_step(&self, note: &Note) -> Note {
-        let root = get_node_index_by_value(&self.0, note).unwrap();
-        let mut neighbors = self.0.neighbors_directed(root, petgraph::Outgoing);
-        let neighbor = neighbors.next().unwrap();
-        self.0[neighbor].clone()
+        let mut cursor = self.0.cursor_front();
+        while let Some(current_note) = cursor.current() {
+            if current_note == note {
+                cursor.move_next();
+                return if let Some(next_note) = cursor.current() {
+                    next_note.clone()
+                } else {
+                    // wrap around to the first note
+                    self.0.front().unwrap().clone()
+                }
+            }
+            cursor.move_next();
+        }
+        panic!("Note not found");
     }
 
     fn whole_step(&self, note: &Note) -> Note {

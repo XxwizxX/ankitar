@@ -1,5 +1,5 @@
 use clap::ValueEnum;
-use std::fmt::Debug;
+use std::fmt::{Debug, Display, Formatter};
 
 #[derive(Debug, Clone, PartialEq, ValueEnum)]
 #[value(rename_all = "verbatim")]
@@ -17,4 +17,10 @@ pub enum Note {
     A,
     Bb,
     B,
+}
+
+impl Display for Note {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }

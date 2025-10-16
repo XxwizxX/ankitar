@@ -1,11 +1,11 @@
-#![feature(linked_list_cursors)]
-
 mod note;
 mod scale;
+mod fmt;
 
 use clap::Parser;
 pub use note::Note;
 pub use scale::*;
+pub use fmt::format_notes;
 use std::collections::LinkedList;
 
 #[derive(Parser)]
@@ -27,10 +27,20 @@ fn main() {
     let scale = Scale::from_type(args.scale);
 
     let result = notes.get_notes(&root, &scale);
+    let result = format_notes(&result);
     println!("{:?}", result)
 }
 
 struct Notes(LinkedList<Note>);
+
+fn find_index<T: PartialEq>(list: &LinkedList<T>, value: &T) -> Option<usize> {
+    for (index, element) in list.iter().enumerate() {
+        if element == value {
+            return Some(index);
+        }
+    }
+    None
+}
 
 impl Notes {
     fn init() -> Self {
@@ -52,20 +62,8 @@ impl Notes {
     }
 
     fn half_step(&self, note: &Note) -> Note {
-        let mut cursor = self.0.cursor_front();
-        while let Some(current_note) = cursor.current() {
-            if current_note == note {
-                cursor.move_next();
-                return if let Some(next_note) = cursor.current() {
-                    next_note.clone()
-                } else {
-                    // wrap around to the first note
-                    self.0.front().unwrap().clone()
-                }
-            }
-            cursor.move_next();
-        }
-        panic!("Note not found");
+        let idx = find_index(&self.0, note).unwrap();
+        self.0.iter().nth((idx + 1) % self.0.len()).unwrap().clone()
     }
 
     fn whole_step(&self, note: &Note) -> Note {
